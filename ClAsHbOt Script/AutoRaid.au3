@@ -279,6 +279,7 @@ Func CheckForRaidableBase()
    Local $GUIDark = GUICtrlRead($GUI_DarkEdit)
    Local $GUITownHall = GUICtrlRead($GUI_TownHallEdit)
    Local $GUIIgnoreStorages = (_GUICtrlButton_GetCheck($GUI_AutoRaidIgnoreStorages) = $BST_CHECKED)
+   Local $myTHLevel = GUICtrlRead($GUI_MyTownHall)
 
    ; Adjust available loot to exclude storages
    Local $adjGold=$gold, $adjElix=$elix, $adjDark=$dark
@@ -306,10 +307,8 @@ Func CheckForRaidableBase()
    SetAutoRaidResults($gold, $elix, $dark, $cups, $townHall, $deadBase)
 
    ; Do we have a gold/elix/dark/townhall/dead match?
-   If $GUIIgnoreStorages Then
-	  If ($GUITownHall-$townHall>=1 And $gold>=$GUIGold And $elix>=$GUIElix And $dark>=$GUIDark) Or _
-		 ($adjGold>=$GUIGold And $adjElix>=$GUIElix And $adjDark>=$GUIDark) Then
-
+   If $GUIIgnoreStorages And $myTHLevel-$townHall<2 Then ; "ignore storages" only valid if target TH < 2 levels from my TH level
+	  If $adjGold>=$GUIGold And $adjElix>=$GUIElix And $adjDark>=$GUIDark Then
 		 DebugWrite("Found Match: " & $gold & " / " & $elix & " / " & $dark & " / " & $townHall & " / " & $deadBase & _
 					" (Adj: " & $adjGold & " / " & $adjElix & ")" )
 		 Return $eAutoExecute
@@ -346,7 +345,7 @@ Func AutoRaidAdjustLootForStorages(Const $townHall, Const $gold, Const $elix, By
    GrabFrameToFile("StorageUsageFrame.bmp", 261, 100, 761, 450)
    Local $x, $y, $conf, $matchIndex, $saveFrame = False
    Local $usageAdj = 10; 12.5
-   Local $myTHLevel = GUICtrlRead($GUI_TownHallEdit) + 1 ; assume that my TH is one higher than the max set in the GUI
+   Local $myTHLevel = GUICtrlRead($GUI_MyTownHall)
 
    ; Gold
    ScanFrameForBestBMP("StorageUsageFrame.bmp", $GoldStorageBMPs, $gConfidenceStorages, $matchIndex, $conf, $x, $y)
@@ -409,7 +408,9 @@ Func CalculateLootInStorage(Const $myTHLevel, Const $targetTHLevel, Const $level
    DebugWrite("Available to loot from storage = " & $availabletoLoot)
 
    ; Adjust available to loot amount by loot penalty
-   If $myTHLevel-$targetTHLevel = 1 Then
+   If $myTHLevel-$targetTHLevel <= 0 Then
+	  $availabletoLoot*=1 ; no penalty if raiding my town hall level or higher
+   ElseIf $myTHLevel-$targetTHLevel = 1 Then
 	  $availabletoLoot*=0.90
    ElseIf $myTHLevel-$targetTHLevel = 2 Then
 	  $availabletoLoot*=0.50
