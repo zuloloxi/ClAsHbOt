@@ -20,10 +20,10 @@ Opt("GUIOnEventMode", 1)
 
 ; CoC Bot Includes
 #include <Globals.au3>
+#include <FileNames.au3>
 #include <GUI.au3>
 #include <Settings.au3>
 #include <Scraper.au3>
-#include <FileNames.au3>
 #include <TownHall.au3>
 #include <ArmyManager.au3>
 #include <KeepOnline.au3>
@@ -256,8 +256,19 @@ Func GetMyLootNumbers()
 	  ; Scrape text fields
 	  Local $MyGold = Number(ScrapeFuzzyText($gSmallCharacterMaps, $rMyGoldTextBox, $gSmallCharMapsMaxWidth, $eScrapeDropSpaces))
 	  Local $MyElix = Number(ScrapeFuzzyText($gSmallCharacterMaps, $rMyElixTextBox, $gSmallCharMapsMaxWidth, $eScrapeDropSpaces))
-	  Local $MyDark = Number(ScrapeFuzzyText($gSmallCharacterMaps, $rMyDarkTextBox, $gSmallCharMapsMaxWidth, $eScrapeDropSpaces))
-	  Local $MyGems = Number(ScrapeFuzzyText($gSmallCharacterMaps, $rMyGemsTextBox, $gSmallCharMapsMaxWidth, $eScrapeDropSpaces))
+
+	  Local $MyDark = 0
+	  If IsTextBoxPresent($rMyGemsTextBoxWithDE) = True Then
+		 $MyDark = Number(ScrapeFuzzyText($gSmallCharacterMaps, $rMyDarkTextBox, $gSmallCharMapsMaxWidth, $eScrapeDropSpaces))
+	  EndIf
+
+	  Local $MyGems = 0
+	  If IsTextBoxPresent($rMyGemsTextBoxNoDE) = True Then
+		 $MyGems = Number(ScrapeFuzzyText($gSmallCharacterMaps, $rMyGemsTextBoxNoDE, $gSmallCharMapsMaxWidth, $eScrapeDropSpaces))
+	  Else
+		 $MyGems = Number(ScrapeFuzzyText($gSmallCharacterMaps, $rMyGemsTextBoxWithDE, $gSmallCharMapsMaxWidth, $eScrapeDropSpaces))
+	  EndIf
+
 	  GUICtrlSetData($GUI_MyGold, $MyGold)
 	  GUICtrlSetData($GUI_MyElix, $MyElix)
 	  GUICtrlSetData($GUI_MyDark, $MyDark)
