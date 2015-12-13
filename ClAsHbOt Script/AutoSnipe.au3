@@ -81,7 +81,10 @@ Func AutoSnipeFindMatch(ByRef $level, ByRef $location, ByRef $left, ByRef $top)
 
    ; Wait for Find a Match button
    Local $failCount = 10
-   While IsButtonPresent($rFindMatchScreenFindAMatchButton) = False And $failCount>0
+   While IsButtonPresent($rFindMatchScreenFindAMatchNoShieldButton)=False And _
+	  IsButtonPresent($rFindMatchScreenFindAMatchWithShieldButton)=False And _
+	  $failCount>0
+
 	  Sleep(1000)
 	  $failCount -= 1
    WEnd
@@ -93,12 +96,17 @@ Func AutoSnipeFindMatch(ByRef $level, ByRef $location, ByRef $left, ByRef $top)
    EndIf
 
    ; Click Find a Match
-   RandomWeightedClick($rFindMatchScreenFindAMatchButton)
+   If IsButtonPresent($rFindMatchScreenFindAMatchNoShieldButton) Then
+	  RandomWeightedClick($rFindMatchScreenFindAMatchNoShieldButton)
+   Else
+	  RandomWeightedClick($rFindMatchScreenFindAMatchWithShieldButton)
+   EndIf
 
    ; Wait for Next button
    $failCount = 30
    While IsButtonPresent($rWaitRaidScreenNextButton) = False And _
-	  IsButtonPresent($rAndroidMessageButton) = False And _
+	  IsButtonPresent($rAndroidMessageButton1) = False And _
+	  IsButtonPresent($rAndroidMessageButton2) = False And _
 	  AttackingIsDisabled() = False And _
 	  $failCount>0
 
@@ -170,7 +178,8 @@ Func AutoSnipeFindMatch(ByRef $level, ByRef $location, ByRef $left, ByRef $top)
 	  ; Sleep and wait for Next button to reappear
 	  $failCount = 30
 	  While IsButtonPresent($rWaitRaidScreenNextButton) = False And _
-		    IsButtonPresent($rAndroidMessageButton) = False And _
+		    IsButtonPresent($rAndroidMessageButton1) = False And _
+		    IsButtonPresent($rAndroidMessageButton2) = False And _
 			AttackingIsDisabled() = False And _
 			$failCount>0
 
@@ -193,7 +202,7 @@ Func AutoSnipeFindMatch(ByRef $level, ByRef $location, ByRef $left, ByRef $top)
 		 Return False
 	  EndIf
 
-	  If $failCount = 0 Or IsButtonPresent($rAndroidMessageButton) Then
+	  If $failCount = 0 Or IsButtonPresent($rAndroidMessageButton1) Or IsButtonPresent($rAndroidMessageButton2) Then
 		 If $failCount = 0 Then
 			DebugWrite("Find Match failed (AS2) - timeout waiting for Wait Raid screen")
 		 Else
@@ -226,7 +235,7 @@ Func CheckForSnipableTH(ByRef $level, ByRef $location, ByRef $left, ByRef $top)
 	  DebugWrite("Could not find Town Hall.  Obscured?")
 	  Return False
    EndIf
-
+#cs
    ; middle
    If $location = $eTownHallMiddle Then
 	  Local $dist = DistBetweenTwoPoints($left+17, $top+17, 511, 273)
@@ -261,26 +270,14 @@ Func CheckForSnipableTH(ByRef $level, ByRef $location, ByRef $left, ByRef $top)
 	  EndIf
 
    EndIf
-
+#ce
 EndFunc
 
 Func AutoSnipeExecuteSnipe(Const $THLevel, Const $THLocation, Const $THLeft, Const $THTop)
    DebugWrite("AutoSnipeExecuteSnipe()")
 
-   ; Move screen
-   Local $deployTopOrBot, $actualTHTop
-   $deployTopOrBot = AutoSnipeMoveScreen($THLocation, $THLeft, $THTop)
-
-   ; Get the new TH location, now that screen has been moved
-   Local $actualTHTop
-   Local $loc, $L
-   Local $th = GetTownHallLevel($loc, $L, $actualTHTop, 0, 0, 1023, 551)
-   If $th = -1 Then
-	  DebugWrite("Unable to re-locate Town Hall after screen move.")
-	  Return False
-   EndIf
-
-   DebugWrite("Town Hall location after screen move: " & $THLeft & ", " & $actualTHTop)
+   Local $deployTopOrBot = "TODO"
+   Local $actualTHTop = 0
 
    ; Find best deploy spot, based on deployment boxes
    Local $boxCount
@@ -493,59 +490,6 @@ Func GetAutoSnipeClickPoints(Const $order, Const ByRef $boxes, ByRef $points)
    Next
 
    _ArraySort($points, $order)
-EndFunc
-
-Func AutoSnipeMoveScreen(Const $THLocation, Const $THLeft, Const $THTop)
-   Local $topBot
-
-   ; TH on left or right edge
-   If $THLeft+17 < 250 Or $THLeft+17 > 773 Then
-	  DebugWrite("TownHall found on " & ($THLeft+17<250 ? "left" : "right") & " edge, keeping screen in center")
-	  $topBot = "Center"
-
-   ; move to top of screen
-   ElseIf $THLocation = $eTownHallTop Then
-	  If $THTop+17 >= 368 Then
-		 DebugWrite("TownHall found at top, moving screen up")
-		 MoveScreenUpToBottom(False)
-		 $topBot = "Bottom"
-	  Else
-		 DebugWrite("TownHall found at top, moving screen down")
-		 MoveScreenDownToTop(False)
-		 $topBot = "Top"
-	  EndIf
-
-   ; move to bottom of screen
-   ElseIf $THLocation = $eTownHallBottom Then
-	  If $THTop+17 >= 130 Then
-		 DebugWrite("TownHall found at bottom, moving screen up")
-		 MoveScreenUpToBottom(False)
-		 $topBot = "Bottom"
-	  Else
-		 DebugWrite("TownHall found at bottom, moving screen down")
-		 MoveScreenDownToTop(False)
-		 $topBot = "Top"
-	  EndIf
-
-   ; if found in center, still shift up or down based on location
-   ElseIf $THLocation = $eTownHallMiddle Then
-	  If $THTop+17 < 275 Then
-		 DebugWrite("TownHall found in middle, moving screen down")
-		 MoveScreenDownToTop(False)
-		 $topBot = "Top"
-	  Else
-		 DebugWrite("TownHall found in middle, moving screen up")
-		 MoveScreenUpToBottom(False)
-		 $topBot = "Bottom"
-	  EndIf
-
-   Else
-	  DebugWrite("TownHall location: " & $THLocation & " ERROR, exiting.")
-	  Exit
-
-   EndIf
-
-   Return $topBot
 EndFunc
 
 Func AutoSnipeFindClosestDeployBoxes(Const $topOrBot, Const $left, Const $top, ByRef $selectedBoxes)

@@ -95,13 +95,7 @@ Func AutoRaidExecuteRaidStrategy1()
 
    ; Determine attack direction
    Local $direction = AutoRaidStrategy1GetDirection()
-   If $direction = "Top" Then
-	  DebugWrite("Attacking from top.")
-	  MoveScreenDownToTop(False)
-   Else
-	  DebugWrite("Attacking from bottom.")
-	  MoveScreenUpToBottom(False)
-   EndIf
+   If $direction = "Bot" Then DragScreenUp()
 
    ; Get buttons
    Local $giantButton[4] = [$troopIndex[$eTroopGiant][0], $troopIndex[$eTroopGiant][1], $troopIndex[$eTroopGiant][2], $troopIndex[$eTroopGiant][3]]
@@ -181,18 +175,16 @@ Func AutoRaidExecuteRaidStrategy1()
 	  Next
    EndIf
 
-   Local $slotsToUseForArchBarb = 20
-
    ; Deploy 50% of barbs
    If $troopIndex[$eTroopBarbarian][0] <> -1 Then
 	  DebugWrite("Deploying 50% of Barbarians (" & Int($availableBarbs*0.5) & ")")
-	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployFiftyPercent, $direction, $slotsToUseForArchBarb)
+	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployFiftyPercent, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy 50% of archers
    If $troopIndex[$eTroopArcher][0] <> -1 Then
 	  DebugWrite("Deploying 50% of Archers (" & Int($availableArchs*0.5) & ")")
-	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployFiftyPercent, $direction, $slotsToUseForArchBarb)
+	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployFiftyPercent, $direction, $gMaxDeployBoxes)
    EndIf
 
    Sleep(3000)
@@ -200,13 +192,13 @@ Func AutoRaidExecuteRaidStrategy1()
    ; Deploy rest of barbs
    If $troopIndex[$eTroopBarbarian][0] <> -1 Then
 	  DebugWrite("Deploying remaining Barbarians")
-	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployRemaining, $direction, $slotsToUseForArchBarb)
+	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy rest of archers
    If $troopIndex[$eTroopArcher][0] <> -1 Then
 	  DebugWrite("Deploying remaining Archers")
-	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployRemaining, $direction, $slotsToUseForArchBarb)
+	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy and monitor heroes
@@ -225,9 +217,6 @@ Func AutoRaidStrategy1GetDirection()
    ; Count the storages, by top/bottom half
    Local $allMatchY[1], $totalMatches=0
    Local $matchX[1], $matchY[1], $matchCount
-
-   ; Move screen up 65 pixels
-   MoveScreenUpToCenter(65)
 
    ; Grab frame
    GrabFrameToFile("LocateStoragesFrame.bmp")
@@ -256,18 +245,17 @@ Func AutoRaidStrategy1GetDirection()
 	  $allMatchY[$totalMatches-$matchCount+$i] = $matchY[$i]
    Next
 
-   ; Move screen back down 65 pixels
-   MoveScreenDownToCenter(65)
-
    ; Count em
    Local $storagesTopBot = 0
    For $i = 0 To UBound($allMatchY)-1
-	  $storagesTopBot += ($allMatchY[$i]+16 < 235 ? -1 : 1)
+	  $storagesTopBot += ($allMatchY[$i]+16 < $gScreenCenterDraggedDown[1] ? -1 : 1)
    Next
 
    ; Attack from top or bottom?
-   ;DebugWrite("$storagesTopBot: " & $storagesTopBot)
-   Return ($storagesTopBot<0 ? "Top" : "Bot")
+   Local $dir = $storagesTopBot<0 ? "Top" : "Bot"
+   DebugWrite("More storages found on " & $dir & ".  Attacking from " & $dir)
+
+   Return $dir
 EndFunc
 
 Func AutoRaidStrategy1DeployBoxes(Const $topOrBot, ByRef $selectedBoxes)

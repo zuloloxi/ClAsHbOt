@@ -11,8 +11,10 @@ Global $gLastPossibleKickTime = TimerInit()
 
 ; BlueStacks
 Global $gTitle = "BlueStacks App Player"
-Global $gBlueStacksWidth = 1024
-Global $gBlueStacksHeight = 600
+Global $gBlueStacksWidth = 860
+Global $gBlueStacksHeight = 672
+Global $gScreenCenterDraggedDown[2] = [429, 334]
+Global $gScreenCenterDraggedUp[2] = [429, 232]
 
 ; Settings
 Global $gIniFile = "CoC Bot.ini"
@@ -32,9 +34,10 @@ Global $gTroopNames[$eTroopCount] = ["Barbarian", "Archer", "Giant", "Goblin", "
 									 "Minion", "Hog Rider", "Valkyrie", "Golem", "Witch", _
 									 "Lava Hound", _
 									 "Barbarian King", "Archer Queen"]
-; Todo, add earthquake and haste, when I get them
-Global Enum $eSpellLightning, $eSpellHeal, $eSpellRage, $eSpellJump, $eSpellFreeze, $eSpellPoison, $eSpellCount
-Global $gSpellNames[$eSpellCount] = ["Lightning", "Rage", "Heal", "Jump", "Freeze", "Poison"]
+Global Enum $eSpellLightning, $eSpellHeal, $eSpellRage, $eSpellJump, $eSpellFreeze, $eSpellPoison, _
+   $eSpellEarthquake, $eSpellHaste, $eSpellCount
+Global $gSpellNames[$eSpellCount] = ["Lightning", "Rage", "Heal", "Jump", "Freeze", "Poison", _
+   "Earthquake", "Haste"]
 
 ; Known screen/window types
 Global Enum $eScreenAndroidHome, $eScreenMain, $eScreenChatOpen, $eScreenFindMatch, _
@@ -50,71 +53,61 @@ Global $gAutoStage = $eAutoNotStarted
 Global Enum $eAutoRaidDeployFiftyPercent, $eAutoRaidDeploySixtyPercent, $eAutoRaidDeployRemaining, $eAutoRaidDeployOneTroop
 Global $gMyMaxSpells = 999
 
-; TownHall location on screen
-Global Enum $eTownHallMiddle, $eTownHallTop, $eTownHallBottom
-
 ; Auto Raid statistics
 Global $gAutoRaidBeginLoot[4] = [-1, -1, -1, -1]  ; gold, elix, dark, cups
 
 ; Deploy locations
-Global $NWSafeDeployBox[4] = [280, 170, 300, 190]
-Global $NESafeDeployBox[4] = [735, 170, 755, 190]
-Global $SWSafeDeployBox[4] = [280, 295, 300, 315]
-Global $SESafeDeployBox[4] = [735, 295, 755, 315]
+Global $gMaxDeployBoxes = 19
 
-; Formula: y = -.7/x + 374
-Global $NWDeployBoxes[21][4]
-Local $y = 325
+Global $NWDeployBoxes[$gMaxDeployBoxes][4]
+Local $y = $gScreenCenterDraggedDown[1]-20
 Local $i = 0
-For $x = 70 To 470 Step 20
+For $x = 45 To 405 Step 20
    $NWDeployBoxes[$i][0] = $x
    $NWDeployBoxes[$i][1] = $y
    $NWDeployBoxes[$i][2] = $x+60
    $NWDeployBoxes[$i][3] = $y+40
-   ;ConsoleWrite("NW Box: " & $i & " " & $NWDeployBoxes[$i][0] & "  " & $NWDeployBoxes[$i][1] & "  " & $NWDeployBoxes[$i][2] & "  " & $NWDeployBoxes[$i][3] & @CRLF)
    $i+=1
-   $y-=14
+   $y-=15
 Next
 
-; Formula: y = .7/x - 340
-Global $NEDeployBoxes[21][4]
-$y = 325
+Global $NEDeployBoxes[$gMaxDeployBoxes][4]
+$y = $gScreenCenterDraggedDown[1]-20
 $i=0
-For $x = 950 To 550 Step -20
+For $x = 820 To 460 Step -20
    $NEDeployBoxes[$i][0] = $x-60
    $NEDeployBoxes[$i][1] = $y
    $NEDeployBoxes[$i][2] = $x
    $NEDeployBoxes[$i][3] = $y+40
-   ;ConsoleWrite("NE Box: " & $i & " " & $NEDeployBoxes[$i][0] & "  " & $NEDeployBoxes[$i][1] & "  " & $NEDeployBoxes[$i][2] & "  " & $NEDeployBoxes[$i][3] & @CRLF)
    $i+=1
-   $y-=14
+   $y-=15
 Next
 
-; Formula: y = .7/x + 276
-Global $SWDeployBoxes[21][4]
-$y = 125
+Global $SWDeployBoxes[$gMaxDeployBoxes][4]
+$y = $gScreenCenterDraggedUp[1]-20
 $i=0
-For $x = 70 To 470 Step 20
+For $x = 45 To 405 Step 20
    $SWDeployBoxes[$i][0] = $x
    $SWDeployBoxes[$i][1] = $y
    $SWDeployBoxes[$i][2] = $x+60
    $SWDeployBoxes[$i][3] = $y+40
-   ;ConsoleWrite("SW Box: " & $i & " " & $SWDeployBoxes[$i][0] & "  " & $SWDeployBoxes[$i][1] & "  " & $SWDeployBoxes[$i][2] & "  " & $SWDeployBoxes[$i][3] & @CRLF)
    $i+=1
-   $y+=14
+   $y+=15
 Next
 
-; Formula: y = -.7/x + 790
-Global $SEDeployBoxes[21][4]
-$y = 125
+Global $SEDeployBoxes[$gMaxDeployBoxes][4]
+$y = $gScreenCenterDraggedUp[1]-20
 $i=0
-For $x = 950 To 550 Step -20
+For $x = 820 To 460 Step -20
    $SEDeployBoxes[$i][0] = $x-60
    $SEDeployBoxes[$i][1] = $y
    $SEDeployBoxes[$i][2] = $x
    $SEDeployBoxes[$i][3] = $y+40
-   ;ConsoleWrite("SE Box: " & $i & " " & $SEDeployBoxes[$i][0] & "  " & $SEDeployBoxes[$i][1] & "  " & $SEDeployBoxes[$i][2] & "  " & $SEDeployBoxes[$i][3] & @CRLF)
    $i+=1
-   $y+=14
+   $y+=15
 Next
 
+Global $NWSafeDeployBox[4] = [$NWDeployBoxes[10][0], $NWDeployBoxes[10][1], $NWDeployBoxes[10][2]-40, $NWDeployBoxes[10][3]-20]
+Global $NESafeDeployBox[4] = [$NEDeployBoxes[10][0]+40, $NEDeployBoxes[10][1], $NEDeployBoxes[10][2], $NEDeployBoxes[10][3]-20]
+Global $SWSafeDeployBox[4] = [$SWDeployBoxes[10][0], $SWDeployBoxes[10][1], $SWDeployBoxes[10][2]-40, $SWDeployBoxes[10][3]-20]
+Global $SESafeDeployBox[4] = [$SEDeployBoxes[10][0]+40, $SEDeployBoxes[10][1], $SEDeployBoxes[10][2], $SEDeployBoxes[10][3]-20]

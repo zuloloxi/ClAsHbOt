@@ -94,6 +94,7 @@ Func ResetToCoCMainScreen()
    WEnd
 
    ZoomOut(True)
+   DragScreenDown()
 EndFunc
 
 Func WhereAmI()
@@ -130,7 +131,8 @@ Func WhereAmI()
    If IsButtonPresent($rShieldIsActivePopupButton) Then Return $eScreenShieldIsActive
 
    ; $ScreenFindMatch
-   If IsButtonPresent($rFindMatchScreenFindAMatchButton) Then Return $eScreenFindMatch
+   If IsButtonPresent($rFindMatchScreenFindAMatchNoShieldButton) Or _
+	  IsButtonPresent($rFindMatchScreenFindAMatchWithShieldButton) Then Return $eScreenFindMatch
 
    ; $ScreenWaitRaid (with "Next")
    If IsButtonPresent($rWaitRaidScreenNextButton) Then Return $eScreenWaitRaid
@@ -171,7 +173,9 @@ Func ZoomOut(Const $clearOnSafeSpot)
 
    Local $s = WhereAmI()
    If $s=$eScreenMain Or $s=$eScreenWaitRaid Or $s=$eScreenLiveRaid Then
-	  For $i = 1 To 3
+
+	  ; Send 4 ctrl-minus keystrokes
+	  For $i = 1 To 4
 		 If $gMouseClickMethod = "MouseClick" Then
 			Send("^-")
 		 Else
@@ -181,75 +185,38 @@ Func ZoomOut(Const $clearOnSafeSpot)
 		 Sleep(250)
 	  Next
 
-	  Sleep(150)
-
 	  If $clearOnSafeSpot Then
 		 RandomWeightedClick($rSafeAreaButton)
 		 Sleep(250)
 	  EndIf
+
    EndIf
 EndFunc
 
-Func MoveScreenDownToTop(Const $clearOnSafeSpot)
+Func DragScreenDown()
+   ; Drag down to set consistent location
    Local $startX, $startY
-   Local $startBox[4] = [300, 65, 725, 110]
+   Local $startBox[4] = [419, 65, 439, 110]
    RandomWeightedCoords($startBox, $startX, $startY)
 
    Local $endX, $endY
-   Local $endBox[4] = [300, 365, 725, 410]
-   RandomWeightedCoords($endBox, $endX, $endY)
-
-   If $clearOnSafeSpot = True Then
-	  RandomWeightedClick($rSafeAreaButton)
-	  Sleep(250)
-   EndIf
-
-   _ClickDrag($startX, $startY, $endX, $endY)
-   Sleep(250)
-EndFunc
-
-Func MoveScreenUpToCenter(Const $dist=83)
-   ; Always 83 pixels up
-   Local $startX, $startY
-   Local $startBox[4] = [450, 365, 575, 410]
-   RandomWeightedCoords($startBox, $startX, $startY)
-
-   Local $endX, $endY
-   Local $endBox[4] = [450, 365, 575, 410]
-   RandomWeightedCoords($endBox, $endX, $endY)
-
-   _ClickDrag($startX, $startY, $endX, $startY-$dist)
-   Sleep(250)
-EndFunc
-
-Func MoveScreenUpToBottom(Const $clearOnSafeSpot)
-   If $clearOnSafeSpot = True Then
-	  RandomWeightedClick($rSafeAreaButton)
-	  Sleep(250)
-   EndIf
-
-   Local $startX, $startY
-   Local $startBox[4] = [300, 365, 725, 410]
-   RandomWeightedCoords($startBox, $startX, $startY)
-
-   Local $endX, $endY
-   Local $endBox[4] = [300, 65, 725, 110]
+   Local $endBox[4] = [419, 240, 439, 285]
    RandomWeightedCoords($endBox, $endX, $endY)
 
    _ClickDrag($startX, $startY, $endX, $endY)
    Sleep(250)
 EndFunc
 
-Func MoveScreenDownToCenter(Const $dist=155)
-   ; Always 155 pixels down
+Func DragScreenUp()
+   ; Drag down to set consistent location
    Local $startX, $startY
-   Local $startBox[4] = [450, 225, 575, 270]
+   Local $startBox[4] = [419, 240, 439, 285]
    RandomWeightedCoords($startBox, $startX, $startY)
 
    Local $endX, $endY
-   Local $endBox[4] = [450, 225, 575, 270]
+   Local $endBox[4] = [419, 65, 439, 110]
    RandomWeightedCoords($endBox, $endX, $endY)
 
-   _ClickDrag($startX, $startY, $startY, $startY+$dist)
+   _ClickDrag($startX, $startY, $endX, $endY)
    Sleep(250)
 EndFunc

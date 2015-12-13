@@ -23,7 +23,7 @@ Func ReadSettings()
 
    ; Confidence Levels
    Global $gConfidenceTownHall = IniRead($gIniFile, "Confidence", "Town Hall", 0.95)
-   Global $gConfidenceCollectLoot = IniRead($gIniFile, "Confidence", "Collect Loot", 0.90)
+   Global $gConfidenceCollectLoot = IniRead($gIniFile, "Confidence", "Collect Loot", 0.95)
    Global $gConfidenceArmyCamp = IniRead($gIniFile, "Confidence", "Army Camp", 0.94)
    Global $gConfidenceBarracks = IniRead($gIniFile, "Confidence", "Barracks", 0.95)
    Global $gConfidenceCollector =IniRead($gIniFile, "Confidence", "Collector",  0.92)
@@ -32,7 +32,7 @@ Func ReadSettings()
    Global $gConfidenceDonateTroopSlot = IniRead($gIniFile, "Confidence", "Donate Troop Slot", 0.99)
    Global $gConfidenceBarracksTroopSlot = IniRead($gIniFile, "Confidence", "Barracks Troop Slot", 0.99)
    Global $gConfidenceTrainTroopsButton = IniRead($gIniFile, "Confidence", "Train Troops Button", 0.99)
-   Global $gConfidenceStorages = IniRead($gIniFile, "Confidence", "Storages", 0.96)
+   Global $gConfidenceStorages = IniRead($gIniFile, "Confidence", "Storages", 0.95)
 
    ; Intervals
    Global $gOnlineCheckInterval = IniRead($gIniFile, "Interval", "Online Check", 15000)

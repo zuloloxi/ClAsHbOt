@@ -82,13 +82,7 @@ Func AutoRaidExecuteRaidStrategy3()
 
    ; Determine attack direction
    Local $direction = AutoRaidStrategy3GetDirection()
-   If $direction = "Top" Then
-	  DebugWrite("Attacking from top.")
-	  MoveScreenDownToTop(False)
-   Else
-	  DebugWrite("Attacking from bottom.")
-	  MoveScreenUpToBottom(False)
-   EndIf
+   If $direction = "Bot" Then DragScreenUp()
 
    ;
    ; Deploy troops
@@ -98,13 +92,13 @@ Func AutoRaidExecuteRaidStrategy3()
    ; Deploy all balloons
    If $troopIndex[$eTroopBalloon][0] <> -1 Then
 	  DebugWrite("Deploying all balloons.")
-	  DeployTroopsToSides($eTroopBalloon, $troopIndex, $eAutoRaidDeployRemaining, $direction, 20)
+	  DeployTroopsToSides($eTroopBalloon, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy all minions
    If $troopIndex[$eTroopMinion][0] <> -1 Then
 	  DebugWrite("Deploying all minions.")
-	  DeployTroopsToSides($eTroopMinion, $troopIndex, $eAutoRaidDeployRemaining, $direction, 20)
+	  DeployTroopsToSides($eTroopMinion, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy and monitor heroes
@@ -123,21 +117,15 @@ Func AutoRaidStrategy3GetDirection()
    ; Count the collectors, by top/bottom half
    Local $matchX[1], $matchY[1], $matchCount
 
-   ; Move screen up 65 pixels
-   MoveScreenUpToCenter(65)
-
    ; Grab frame
    GrabFrameToFile("LocateCollectorsFrame.bmp")
 
    $matchCount = LocateBuildings("LocateCollectorsFrame.bmp", $CollectorBMPs, $gConfidenceCollector, $matchX, $matchY)
    Local $collectorsOnTop = 0, $collectorsOnBot = 0
 
-   ; Move screen back down 65 pixels
-   MoveScreenDownToCenter(65)
-
    For $i = 0 To $matchCount-1
 	  ;DebugWrite("Match " & $i & ": " & $matchX[$i] & "," & $matchY[$i])
-	  If $matchY[$i] < 250 Then
+	  If $matchY[$i]+21 < $gScreenCenterDraggedDown[1] Then
 		 $collectorsOnTop += 1
 	  Else
 		 $collectorsOnBot += 1
@@ -145,5 +133,11 @@ Func AutoRaidStrategy3GetDirection()
    Next
 
    ; Attack from top or bottom?
-   Return ($collectorsOnTop/($collectorsOnTop+$collectorsOnBot) > 0.65 ? "Top" : "Bot")
+   DebugWrite("Collectors found top: " & $collectorsOnTop & ", bottom: " & $collectorsOnBot)
+
+   Local $dir = $collectorsOnTop/($collectorsOnTop+$collectorsOnBot) >= 0.5 ? "Top" : "Bot"
+
+   DebugWrite("Attacking from " & $dir)
+
+   Return $dir
 EndFunc

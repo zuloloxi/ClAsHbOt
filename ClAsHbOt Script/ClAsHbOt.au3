@@ -1,5 +1,19 @@
 #cs
 ClAsHbOt!
+
+Dec 10 Update To Do
+- Charmaps for end winnings and bonus
+- Donate function
+- finish collecting storage images
+  - Gold 11.75, 11.90, all 10.xx
+  - Elix all 10.xx
+  - Dark 6.50, 5.50, 4.50, 2.xx 1.xx
+- finish collecting collectors images
+  - Gold L10
+  - Elix L10, L9
+- Change troop deployment to "two fingered"
+- Fix texts, remove "Tap or press and hold..."
+
 #ce
 
 Opt("MustDeclareVars", 1)
@@ -37,6 +51,7 @@ Opt("GUIOnEventMode", 1)
 #include <BlueStacks.au3>
 #include <Screen.au3>
 #include <Donate.au3>
+#include <Test.au3>
 
 
 Main()
@@ -48,6 +63,18 @@ Func Main()
    InitScraper()
 
    ReadSettings()
+
+;DebugWrite("WhereAmI: " & WhereAmI())
+;ZoomOut(False)
+;$gScraperDebug = True
+;TestMyStuff()
+;TestRaidLoot()
+;TestRaidTroopsCount()
+;TestBarracksStatus()
+;TestEndBattleLoot()
+;TestEndBattleBonus()
+;TestDeployBoxCalcs()
+;Exit
 
    InitGUI()
 
@@ -152,7 +179,8 @@ Func MainApplicationLoop()
 	  ; Auto Snipe
 	  If _GUICtrlButton_GetCheck($GUI_AutoSnipeCheckBox) = $BST_CHECKED And _
 		 $gPossibleKick < 2 And _
-		 IsButtonPresent($rAndroidMessageButton) = False Then
+		 IsButtonPresent($rAndroidMessageButton1) = False And _
+		 IsButtonPresent($rAndroidMessageButton2) = False Then
 
 		 $gAutoSnipeClicked = False
 		 CheckForAndroidMessageBox()
@@ -164,7 +192,8 @@ Func MainApplicationLoop()
 	  If (_GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox) = $BST_CHECKED Or _GUICtrlButton_GetCheck($GUI_AutoSnipeCheckBox) = $BST_CHECKED) And _
 		 _GUICtrlButton_GetCheck($GUI_AutoRaidDumpCups) = $BST_CHECKED And _
 		 $gPossibleKick < 2 And _
-		 IsButtonPresent($rAndroidMessageButton) = False Then
+		 IsButtonPresent($rAndroidMessageButton1) = False And _
+		 IsButtonPresent($rAndroidMessageButton2) = False Then
 
 		 DumpCups()
 	  EndIf
@@ -172,7 +201,8 @@ Func MainApplicationLoop()
 	  ; Auto Raid, Attack
 	  If _GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox) = $BST_CHECKED And _
 		 $gPossibleKick < 2 And _
-		 IsButtonPresent($rAndroidMessageButton) = False Then
+		 IsButtonPresent($rAndroidMessageButton1) = False And _
+		 IsButtonPresent($rAndroidMessageButton2) = False Then
 
 		 $gAutoRaidClicked = False
 		 CheckForAndroidMessageBox()
@@ -280,7 +310,8 @@ Func GetMyLootNumbers()
 	  ; Only search for my town hall level if we don't already know it
 	  Local $GUIMyTownHall = GUICtrlRead($GUI_MyTownHall)
 	  If $GUIMyTownHall = 0 Then
-		 ZoomOut(False)
+		 ZoomOut(True)
+		 DragScreenDown()
 
 		 Local $location, $top, $left
 		 Local $MyTownHall = GetTownHallLevel($location, $left, $top)

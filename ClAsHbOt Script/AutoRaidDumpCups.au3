@@ -41,21 +41,21 @@ Func DoCupsDump()
 
    ; Deploy from top or bottom?
    Local $direction = (Random()>0.5) ? "Top" : "Bot"
-
-   If $direction = "Top" Then
-	  MoveScreenDownToTop(False)
+   If $direction = "Bot" Then
+	  DragScreenUp()
    Else
-	  MoveScreenUpToBottom(False)
+	  DragScreenDown()
    EndIf
 
    If _GUICtrlButton_GetCheck($GUI_AutoRaidDumpCups)=$BST_UNCHECKED Then Return False
+
 
    ; Deploy one barb
    Local $barbButton[4] = [$troopIndex[$eTroopBarbarian][0], $troopIndex[$eTroopBarbarian][1], _
 						   $troopIndex[$eTroopBarbarian][2], $troopIndex[$eTroopBarbarian][3]]
    RandomWeightedClick($barbButton)
    Sleep(500)
-   DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployOneTroop, $direction, 20)
+   DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployOneTroop, $direction, $gMaxDeployBoxes)
    Sleep(500)
 
    ; Click End Battle button

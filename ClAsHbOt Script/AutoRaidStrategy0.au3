@@ -85,13 +85,7 @@ Func AutoRaidExecuteRaidStrategy0()
 
    ; Determine attack direction
    Local $direction = AutoRaidStrategy0GetDirection()
-   If $direction = "Top" Then
-	  DebugWrite("Attacking from top.")
-	  MoveScreenDownToTop(False)
-   Else
-	  DebugWrite("Attacking from bottom.")
-	  MoveScreenUpToBottom(False)
-   EndIf
+   If $direction = "Bot" Then DragScreenUp()
 
    ;
    ; Deploy troops
@@ -101,13 +95,13 @@ Func AutoRaidExecuteRaidStrategy0()
    ; Deploy 60% of barbs
    If $troopIndex[$eTroopBarbarian][0] <> -1 Then
 	  DebugWrite("Deploying 60% of Barbarians (" & Int($availableBarbs*0.6) & ")")
-	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, 20)
+	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy 60% of archers
    If $troopIndex[$eTroopArcher][0] <> -1 Then
 	  DebugWrite("Deploying 60% of Archers (" & Int($availableArchs*0.6) & ")")
-	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, 20)
+	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy breakers
@@ -119,13 +113,13 @@ Func AutoRaidExecuteRaidStrategy0()
    ; Deploy rest of barbs
    If $troopIndex[$eTroopBarbarian][0] <> -1 Then
 	  DebugWrite("Deploying remaining Barbarians")
-	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployRemaining, $direction, 20)
+	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy rest of archers
    If $troopIndex[$eTroopArcher][0] <> -1 Then
 	  DebugWrite("Deploying remaining Archers")
-	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployRemaining, $direction, 20)
+	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy and monitor heroes
@@ -144,27 +138,26 @@ Func AutoRaidStrategy0GetDirection()
    ; Count the collectors, by top/bottom half
    Local $matchX[1], $matchY[1], $matchCount
 
-   ; Move screen up 65 pixels
-   MoveScreenUpToCenter(65)
-
    ; Grab frame
    GrabFrameToFile("LocateCollectorsFrame.bmp")
 
    $matchCount = LocateBuildings("LocateCollectorsFrame.bmp", $CollectorBMPs, $gConfidenceCollector, $matchX, $matchY)
    Local $collectorsOnTop = 0, $collectorsOnBot = 0
 
-   ; Move screen back down 65 pixels
-   MoveScreenDownToCenter(65)
-
    For $i = 0 To $matchCount-1
 	  ;DebugWrite("Match " & $i & ": " & $matchX[$i] & "," & $matchY[$i])
-	  If $matchY[$i] < 250 Then
+	  If $matchY[$i]+21 < $gScreenCenterDraggedDown[1] Then
 		 $collectorsOnTop += 1
 	  Else
 		 $collectorsOnBot += 1
 	  EndIf
    Next
 
-   ; Attack from top or bottom?
-   Return ($collectorsOnTop/($collectorsOnTop+$collectorsOnBot) > 0.65 ? "Top" : "Bot")
+   DebugWrite("Collectors found top: " & $collectorsOnTop & ", bottom: " & $collectorsOnBot)
+
+   Local $dir = $collectorsOnTop/($collectorsOnTop+$collectorsOnBot) >= 0.5 ? "Top" : "Bot"
+
+   DebugWrite("Attacking from " & $dir)
+
+   Return $dir
 EndFunc

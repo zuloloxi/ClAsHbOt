@@ -96,13 +96,7 @@ Func AutoRaidExecuteRaidStrategy2()
 
    ; Determine attack direction
    Local $direction = AutoRaidStrategy0GetDirection()
-   If $direction = "Top" Then
-	  DebugWrite("Attacking from top.")
-	  MoveScreenDownToTop(False)
-   Else
-	  DebugWrite("Attacking from bottom.")
-	  MoveScreenUpToBottom(False)
-   EndIf
+   If $direction = "Bot" Then DragScreenUp()
 
     ; Get buttons
    Local $barbButton[4] = [$troopIndex[$eTroopBarbarian][0], $troopIndex[$eTroopBarbarian][1], $troopIndex[$eTroopBarbarian][2], $troopIndex[$eTroopBarbarian][3]]
@@ -120,13 +114,13 @@ Func AutoRaidExecuteRaidStrategy2()
    ; Deploy 60% of barbs
    If $troopIndex[$eTroopBarbarian][0] <> -1 Then
 	  DebugWrite("Deploying 60% of Barbarians (" & Int($availableBarbs*0.6) & ")")
-	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, 20)
+	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy 60% of archers
    If $troopIndex[$eTroopArcher][0] <> -1 Then
 	  DebugWrite("Deploying 60% of Archers (" & Int($availableArchs*0.6) & ")")
-	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, 20)
+	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeploySixtyPercent, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy breakers
@@ -138,13 +132,13 @@ Func AutoRaidExecuteRaidStrategy2()
    ; Deploy rest of barbs
    If $troopIndex[$eTroopBarbarian][0] <> -1 Then
 	  DebugWrite("Deploying remaining Barbarians")
-	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployRemaining, $direction, 20)
+	  DeployTroopsToSides($eTroopBarbarian, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    ; Deploy rest of archers
    If $troopIndex[$eTroopArcher][0] <> -1 Then
 	  DebugWrite("Deploying remaining Archers")
-	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployRemaining, $direction, 20)
+	  DeployTroopsToSides($eTroopArcher, $troopIndex, $eAutoRaidDeployRemaining, $direction, $gMaxDeployBoxes)
    EndIf
 
    Sleep(5000)

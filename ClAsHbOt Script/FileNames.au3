@@ -8,11 +8,17 @@ Global $GUIImages[12] = [ _
   "GUISplash\troop-healer.png", "GUISplash\troop-pekka.png", "GUISplash\troop-wallbreaker.png", _
   "GUISplash\troop-wizard.png" , "GUISplash\troop-bk.png", "GUISplash\troop-aq.png"]
 
-Global $TownHallBMPs[4] = [ _
-  "TownHall\TH7.bmp", "TownHall\TH8.bmp", "TownHall\TH9.bmp", "TownHall\TH10.bmp"]
+Global $TownHallBMPs[5] = [ _
+  "TownHall\TH7.bmp", "TownHall\TH8.bmp", "TownHall\TH9.bmp", "TownHall\TH10.bmp", "TownHall\TH11.bmp"]
 
-Global $CollectLootBMPs[3] = [ _
-  "Loot\FullGoldCollector.bmp", "Loot\FullElixCollector.bmp", "Loot\FullDarkCollector.bmp"]
+Global $CollectGoldLootBMPs[3] = [ _
+  "Loot\FullGoldCollector1.bmp", "Loot\FullGoldCollector2.bmp", "Loot\FullGoldCollector3.bmp"]
+
+Global $CollectElixLootBMPs[3] = [ _
+  "Loot\FullElixCollector1.bmp", "Loot\FullElixCollector2.bmp", "Loot\FullElixCollector3.bmp"]
+
+Global $CollectDarkLootBMPs[3] = [ _
+  "Loot\FullDarkCollector1.bmp", "Loot\FullDarkCollector2.bmp", "Loot\FullDarkCollector3.bmp"]
 
 Global $CollectorBMPs[8] = [ _
   "Collectors\GoldCollectorL12.bmp", "Collectors\GoldCollectorL11.bmp", "Collectors\GoldCollectorL10.bmp", _
@@ -31,16 +37,14 @@ Global $ElixStorageBMPs[6] = [ _
   "Storages\ElixStorageL11.90.bmp", _
   "Storages\ElixStorageL10.00.bmp"]
 
-Global $DarkStorageBMPs[16] = [ _
-  "Storages\DarkStorageL6.00.bmp", "Storages\DarkStorageL6.10.bmp", "Storages\DarkStorageL6.25.bmp", _
+Global $DarkStorageBMPs[17] = [ _
+  "Storages\DarkStorageL6.00.bmp", "Storages\DarkStorageL6.25.bmp", "Storages\DarkStorageL6.50.bmp", _
   "Storages\DarkStorageL6.75.bmp", "Storages\DarkStorageL6.90.bmp", _
-  "Storages\DarkStorageL5.25.bmp", "Storages\DarkStorageL5.30.bmp", "Storages\DarkStorageL5.40.bmp", _
+  "Storages\DarkStorageL5.00.bmp", "Storages\DarkStorageL5.25.bmp", "Storages\DarkStorageL5.50.bmp", _
   "Storages\DarkStorageL4.00.bmp", "Storages\DarkStorageL4.25.bmp", "Storages\DarkStorageL4.50.bmp", _
-  "Storages\DarkStorageL3.00.bmp", _
-  "Storages\DarkStorageL2.00.bmp", "Storages\DarkStorageL2.25.bmp", _
+  "Storages\DarkStorageL3.00.bmp", "Storages\DarkStorageL3.25.bmp", _
+  "Storages\DarkStorageL2.00.bmp", "Storages\DarkStorageL2.50.bmp", _
   "Storages\DarkStorageL1.00.bmp", "Storages\DarkStorageL1.25.bmp"]
-
-Global $gTrainTroopsButtonBMPs[1] = ["TrainTroopsButton.bmp"]
 
 Global $gTroopSlotBMPs[$eTroopCount] = [ _
   "RaidSlots\SlotBarbarian.bmp", "RaidSlots\SlotArcher.bmp", "RaidSlots\SlotGiant.bmp", "RaidSlots\SlotGoblin.bmp", _
@@ -49,10 +53,10 @@ Global $gTroopSlotBMPs[$eTroopCount] = [ _
   "RaidSlots\SlotMinion.bmp", "RaidSlots\SlotHogRider.bmp", "RaidSlots\SlotValkyrie.bmp", "RaidSlots\SlotGolem.bmp", _
   "RaidSlots\SlotWitch.bmp", "RaidSlots\SlotLavaHound.bmp", "RaidSlots\SlotKing.bmp", "RaidSlots\SlotQueen.bmp"]
 
-; Todo, add earthquake and haste, when I get them
 Global $gSpellSlotBMPs[$eSpellCount] = [ _
   "RaidSlots\SlotLightningSpell.bmp", "RaidSlots\SlotHealSpell.bmp", "RaidSlots\SlotRageSpell.bmp", _
-  "RaidSlots\SlotJumpSpell.bmp", "RaidSlots\SlotFreezeSpell.bmp", "RaidSlots\SlotPoisonSpell.bmp"]
+  "RaidSlots\SlotJumpSpell.bmp", "RaidSlots\SlotFreezeSpell.bmp", "RaidSlots\SlotPoisonSpell.bmp", _
+  "RaidSlots\SlotEarthquakeSpell.bmp", "RaidSlots\SlotHasteSpell.bmp"]
 
 Global $DonateButtonBMPs[1] = ["Donate\DonateButton.bmp"]
 
@@ -70,7 +74,7 @@ Global $gBarracksTroopSlotBMPs [$eTroopCount-2] = [ _
   "Barracks\BarracksMinion.bmp", "Barracks\BarracksHogRider.bmp", "Barracks\BarracksValkyrie.bmp", "Barracks\BarracksGolem.bmp", _
   "Barracks\BarracksWitch.bmp", "Barracks\BarracksLavaHound.bmp"]
 
-; Todo, add earthquake and haste, when I get them
 Global $gBarracksSpellSlotBMPs [$eSpellCount] = [ _
   "Barracks\BarracksLightningSpell.bmp", "Barracks\BarracksHealSpell.bmp", "Barracks\BarracksRageSpell.bmp", _
-  "Barracks\BarracksJumpSpell.bmp", "Barracks\BarracksFreezeSpell.bmp", "Barracks\BarracksPoisonSpell.bmp"]
+  "Barracks\BarracksJumpSpell.bmp", "Barracks\BarracksFreezeSpell.bmp", "Barracks\BarracksPoisonSpell.bmp", _
+  "Barracks\BarracksEarthquakeSpell.bmp", "Barracks\BarracksHasteSpell.bmp"]
