@@ -14,19 +14,22 @@ Func ResetToCoCMainScreen()
 
    ; Live raid screen - do nothing - don't interrupt a live raid
    Case $eScreenLiveRaid
+	  DebugWrite("ResetToCoCMainScreen(), On Live Raid Screen - doing nothing.")
 	  Return
 
    ; Wait raid screen - do nothing - don't interrupt a Find Match or Auto Raid in progress
    Case $eScreenWaitRaid
+	  DebugWrite("ResetToCoCMainScreen(), On Wait Raid Screen - doing nothing.")
 	  Return
 
    ; Unknown screen - don't do anything
    Case $eScreenUnknown
+	  DebugWrite("ResetToCoCMainScreen(), On Unknown Screen - doing nothing.")
 	  Return
 
    ; Android Home Screen - start CoC
    Case $eScreenAndroidHome
-	  DebugWrite("On Android Home Screen - Starting Clash of Clans.")
+	  DebugWrite("ResetToCoCMainScreen(), On Android Home Screen - Starting Clash of Clans.")
       Local $bestMatch = 99, $bestConfidence = 0, $bestX = 0, $bestY = 0
 	  GrabFrameToFile("WhereAmIFrame.bmp")
 	  ScanFrameForBestBMP("WhereAmIFrame.bmp", $CoCIconBMPs, 0.95, $bestMatch, $bestConfidence, $bestX, $bestY)
@@ -38,7 +41,7 @@ Func ResetToCoCMainScreen()
 
    ; Clash screen in Play Store
    Case $eScreenPlayStore
-	  DebugWrite("On Clash Play Store Screen - Starting Clash of Clans.")
+	  DebugWrite("ResetToCoCMainScreen(), On Clash Play Store Screen - Starting Clash of Clans.")
       Local $bestMatch = 99, $bestConfidence = 0, $bestX = 0, $bestY = 0
 	  GrabFrameToFile("WhereAmIFrame.bmp")
 	  ScanFrameForBestBMP("WhereAmIFrame.bmp", $gPlayStoreOpenButton, 0.95, $bestMatch, $bestConfidence, $bestX, $bestY)
@@ -48,50 +51,69 @@ Func ResetToCoCMainScreen()
 		 $countdown = 30
 	  EndIf
 
+   ; Android message box is open
+   Case $eScreenAndroidMessageBox
+	  If IsButtonPresent($rAndroidMessageButton1) Then
+		 DebugWrite("ResetToCoCMainScreen(), On Android Message Screen (1) - clicking message box.")
+		 RandomWeightedClick($rAndroidMessageButton1)
+	  EndIf
+
+	  If IsButtonPresent($rAndroidMessageButton2) Then
+		 DebugWrite("ResetToCoCMainScreen(), On Android Message Screen (1) - clicking message box.")
+		 RandomWeightedClick($rAndroidMessageButton2)
+	  EndIf
+
    ; CoC Chat Open - Close it
    Case $eScreenChatOpen
+	  DebugWrite("ResetToCoCMainScreen(), On Chat Open Screen - closing chat.")
 	  RandomWeightedClick($rMainScreenOpenChatButton)
 
    ; Chat window open but dimmed - click on safe spot
    Case $eScreenChatDimmed
+	  DebugWrite("ResetToCoCMainScreen(), On Chat Dimmed Screen - clicking safe spot.")
 	  RandomWeightedClick($rSafeAreaButton)
 	  Sleep(1000)
-	  If WhereAmI()=$eScreenChatOpen Then RandomWeightedClick($rMainScreenOpenChatButton)
+	  If WhereAmI()=$eScreenChatOpen Then
+		 DebugWrite("ResetToCoCMainScreen(), On Chat Open Screen - closing chat.")
+		 RandomWeightedClick($rMainScreenOpenChatButton)
+	  EndIf
 
    ; CoC Find Match screen - exit
    Case $eScreenFindMatch
+	  DebugWrite("ResetToCoCMainScreen(), On Find Match Screen - clicking close button.")
 	  RandomWeightedClick($rFindMatchScreenCloseWindowButton)
-
-   ; CoC Wait Raid screen - exit
-   Case $eScreenWaitRaid
-	  RandomWeightedClick($rLiveRaidScreenEndBattleButton)
 
    ; End Battle screen - click button
    Case $eScreenEndBattle
+	  DebugWrite("ResetToCoCMainScreen(), On End Battle Screen - clicking Return Home button.")
 	  RandomWeightedClick($rBattleHasEndedScreenReturnHomeButton)
 
    ; Live Replay End Battle screen - click "Return Home"
    Case $eScreenLiveReplayEndBattle
+	  DebugWrite("ResetToCoCMainScreen(), On Live Replay End Battle Screen - clicking Return Home button.")
 	  RandomWeightedClick($rLiveReplayEndScreenReturnHomeButton)
 
    Case $eScreenVilliageWasAttacked
+	  DebugWrite("ResetToCoCMainScreen(), On Villiage Was Attached Screen - clicking Okay button.")
 	  RandomWeightedClick($rWindowVilliageWasAttackedOkayButton)
 
    ; Army Manager window
    Case $eWindowArmyManager
+	  DebugWrite("ResetToCoCMainScreen(), On Army Manager window - clicking close button.")
 	  RandomWeightedClick($rArmyManagerWindowCloseButton)
-
-   ; Shield Is Active screen
-   Case $eScreenShieldIsActive
-	  RandomWeightedClick($rShieldIsActivePopupButton)
 
    EndSwitch
 
    ; Wait for main screen to appear
-   While WhereAmI() <> $eScreenMain And $countdown > 0
+   While WhereAmI()<>$eScreenMain And WhereAmI()<>$eScreenVilliageWasAttacked And $countdown>0
 	  Sleep(1000)
 	  $countdown -= 1
    WEnd
+
+   If WhereAmI() = $eScreenVilliageWasAttacked Then
+	  DebugWrite("ResetToCoCMainScreen(), On Villiage Was Attached Screen - clicking Okay button.")
+	  RandomWeightedClick($rWindowVilliageWasAttackedOkayButton)
+   EndIf
 
    ZoomOut(True)
    DragScreenDown()
@@ -118,6 +140,10 @@ Func WhereAmI()
 	  Return $eScreenPlayStore
    EndIf
 
+   ; $eScreenAndroidMessageBox
+   If IsButtonPresent($rAndroidMessageButton1) Then Return $eScreenAndroidMessageBox
+   If IsButtonPresent($rAndroidMessageButton2) Then Return $eScreenAndroidMessageBox
+
    ; $ScreenMain
    If IsColorPresent($rScreenMainColor) Then Return $eScreenMain
 
@@ -126,9 +152,6 @@ Func WhereAmI()
 
    ; $WindowChatDimmed
    If IsColorPresent($rWindowChatDimmedColor) Then Return $eScreenChatDimmed
-
-   ; $ScreenShieldIsActive
-   If IsButtonPresent($rShieldIsActivePopupButton) Then Return $eScreenShieldIsActive
 
    ; $ScreenFindMatch
    If IsButtonPresent($rFindMatchScreenFindAMatchNoShieldButton) Or _

@@ -20,19 +20,12 @@ Func ReadSettings()
    ; If set to true, the bot will stop when it detects a snipable base, and wait for you to manually raid
    Global $gAutoSnipeNotifyOnly = _Boolean(IniRead($gIniFile, "AutoSnipe", "Auto Snipe Notify Only", False))
    DebugWrite("Setting AutoSnipe Notify Only = " & $gAutoSnipeNotifyOnly)
+   Global $gTHSnipeMaxDistFromCorner = IniRead($gIniFile, "AutoSnipe", "Max Distance From Corner", 80)
+   DebugWrite("Setting TH Snipe Max Distance From Corner = " & $gTHSnipeMaxDistFromCorner)
 
-   ; Confidence Levels
-   Global $gConfidenceTownHall = IniRead($gIniFile, "Confidence", "Town Hall", 0.95)
-   Global $gConfidenceCollectLoot = IniRead($gIniFile, "Confidence", "Collect Loot", 0.95)
-   Global $gConfidenceArmyCamp = IniRead($gIniFile, "Confidence", "Army Camp", 0.94)
-   Global $gConfidenceBarracks = IniRead($gIniFile, "Confidence", "Barracks", 0.95)
-   Global $gConfidenceCollector =IniRead($gIniFile, "Confidence", "Collector",  0.92)
-   Global $gConfidenceDEStorage = IniRead($gIniFile, "Confidence", "Dark Elixir Storage", 0.95)
-   Global $gConfidenceRaidTroopSlot = IniRead($gIniFile, "Confidence", "Raid Troop Slot", 0.98)
-   Global $gConfidenceDonateTroopSlot = IniRead($gIniFile, "Confidence", "Donate Troop Slot", 0.99)
-   Global $gConfidenceBarracksTroopSlot = IniRead($gIniFile, "Confidence", "Barracks Troop Slot", 0.99)
-   Global $gConfidenceTrainTroopsButton = IniRead($gIniFile, "Confidence", "Train Troops Button", 0.99)
-   Global $gConfidenceStorages = IniRead($gIniFile, "Confidence", "Storages", 0.95)
+   ; Defense Farm
+   Global $gDefenseFarmOfflineTime = IniRead($gIniFile, "DefenseFarm", "Defense Farm Offline Time", 1200000) ; Duration to wait before logging in and dumping cups
+   DebugWrite("Setting Defense Farm Offline Time = " & millisecondToMMSS($gDefenseFarmOfflineTime))
 
    ; Intervals
    Global $gOnlineCheckInterval = IniRead($gIniFile, "Interval", "Online Check", 15000)
@@ -47,7 +40,7 @@ Func ReadSettings()
    DebugWrite("Setting Interval Pause Between Nexts = " & $gPauseBetweenNexts)
 
    ; Donate
-   Global $gDonateMatchTroopStrings[$eTroopCount-2]
+   Global $gDonateMatchTroopStrings[$gTroopCountExcludingHeroes]
    $gDonateMatchTroopStrings[$eTroopBarbarian] = IniRead($gIniFile, "Donate", "Barbarian Match Strings", "barb")
    $gDonateMatchTroopStrings[$eTroopArcher] = IniRead($gIniFile, "Donate", "Archer Match Strings", "barb")
    $gDonateMatchTroopStrings[$eTroopGoblin] = IniRead($gIniFile, "Donate", "Goblin Match Strings", "barb")
@@ -90,7 +83,7 @@ Func ReadSettings()
    ;Global $gDonateBarracksStandardMaximum = IniRead($gIniFile, "Donate", "Donate Barracks Standard Maximum", 4)
    ;Global $gDonateBarracksDarkMaximum = IniRead($gIniFile, "Donate", "Donate Barracks Dark Maximum", 2)
 
-   ;Global $gDonateTroopStock[$eTroopCount-2]
+   ;Global $gDonateTroopStock[$gTroopCountExcludingHeroes]
    ;$gDonateTroopStock[$eTroopBarbarian] = Number(IniRead($gIniFile, "Donate", "Barbarian Stock Amount", 0))
    ;$gDonateTroopStock[$eTroopArcher] = Number(IniRead($gIniFile, "Donate", "Archer Stock Amount", 0))
    ;$gDonateTroopStock[$eTroopGoblin] = Number(IniRead($gIniFile, "Donate", "Goblin Stock Amount", 0))
@@ -146,6 +139,8 @@ Func SaveSettings()
    IniWrite($gIniFile, "General", "Dump Cups Threshold", GUICtrlRead($GUI_AutoRaidDumpCupsThreshold))
    IniWrite($gIniFile, "General", "Dead Bases Only", _GUICtrlButton_GetCheck($GUI_AutoRaidDeadBases))
    IniWrite($gIniFile, "General", "Ignore Storages", _GUICtrlButton_GetCheck($GUI_AutoRaidIgnoreStorages))
+   IniWrite($gIniFile, "General", "Snipe Exposed TH",  _GUICtrlButton_GetCheck($GUI_AutoRaidSnipeExposedTH))
+   IniWrite($gIniFile, "General", "Wait For Heroes", _GUICtrlComboBox_GetCurSel($GUI_AutoRaidWaitForHeroesCombo))
    IniWrite($gIniFile, "General", "Raid Strategy", _GUICtrlComboBox_GetCurSel($GUI_AutoRaidStrategyCombo))
 EndFunc
 

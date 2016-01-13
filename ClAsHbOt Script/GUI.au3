@@ -9,12 +9,13 @@
 
 ; GUI Globals
 Global $GUI, $GUIImage, $GUIGraphic
-Global $GUI_Width=285, $GUI_Height=440
+Global $GUI_Width=285, $GUI_Height=478
 Global $GUI_KeepOnlineCheckBox, $GUI_CollectLootCheckBox, $GUI_DonateTroopsCheckBox, _
-	  $GUI_FindMatchCheckBox, $GUI_AutoSnipeCheckBox, $GUI_AutoRaidCheckBox
+	  $GUI_FindMatchCheckBox, $GUI_AutoPushCheckBox, $GUI_AutoRaidCheckBox, $GUI_DefenseFarmCheckBox
 Global $GUI_CloseButton
 Global $GUI_GoldEdit, $GUI_ElixEdit, $GUI_DarkEdit, $GUI_TownHallEdit, $GUI_AutoRaidUseBreakers, $GUI_AutoRaidBreakerCountEdit, _
-	  $GUI_AutoRaidDumpCups, $GUI_AutoRaidDeadBases, $GUI_AutoRaidIgnoreStorages, $GUI_AutoRaidDumpCupsThreshold, $GUI_AutoRaidStrategyCombo
+	  $GUI_AutoRaidDumpCups, $GUI_AutoRaidDeadBases, $GUI_AutoRaidIgnoreStorages, $GUI_AutoRaidSnipeExposedTH, $GUI_AutoRaidDumpCupsThreshold, _
+	  $GUI_AutoRaidStrategyCombo, $GUI_AutoRaidWaitForHeroesCombo
 Global $GUI_MyGold, $GUI_MyElix, $GUI_MyDark, $GUI_MyGems, $GUI_MyCups, $GUI_MyTownHall
 Global $GUI_Winnings, $GUI_Results, $GUI_AutoStatus
 
@@ -44,7 +45,7 @@ Func InitGUI()
 
    ; Left side, things todo group
    $y+=31
-   $h=145
+   $h=161
    GUICtrlCreateGroup("Things Todo", $x, $y, $w, $h)
 
    $y += 15
@@ -64,12 +65,16 @@ Func InitGUI()
    GUICtrlSetOnEvent($GUI_FindMatchCheckBox, "GUIFindMatchCheckBox")
 
    $y += 19
-   $GUI_AutoSnipeCheckBox = GUICtrlCreateCheckbox("F9 Auto Snipe", $x+5, $y, $w-6, 25)
-   GUICtrlSetOnEvent($GUI_AutoSnipeCheckBox, "GUIAutoSnipeCheckBox")
+   $GUI_AutoPushCheckBox = GUICtrlCreateCheckbox("F9 Auto Push", $x+5, $y, $w-6, 25)
+   GUICtrlSetOnEvent($GUI_AutoPushCheckBox, "GUIAutoPushCheckBox")
 
    $y += 19
    $GUI_AutoRaidCheckBox = GUICtrlCreateCheckbox("F10 Auto Raid", $x+5, $y, $w-6, 25)
    GUICtrlSetOnEvent($GUI_AutoRaidCheckBox, "GUIAutoRaidCheckBox")
+
+   $y += 19
+   $GUI_DefenseFarmCheckBox = GUICtrlCreateCheckbox("Defense Farm 00:00", $x+5, $y, $w-6, 25)
+   GUICtrlSetOnEvent($GUI_DefenseFarmCheckBox, "GUIDefenseFarmCheckBox")
 
    ; Right side, my stuff group
    $x=153
@@ -105,8 +110,8 @@ Func InitGUI()
 
    ; Right side, auto raid options group
    $y += 29
-   $h=138
-   GUICtrlCreateGroup("Auto Raid/Snipe", $x, $y, $w, $h)
+   $h=179
+   GUICtrlCreateGroup("Auto Raid/Push", $x, $y, $w, $h)
 
    $y += 14
    $GUI_AutoRaidUseBreakers = GUICtrlCreateCheckbox("Use Breakers", $x+5, $y, 80, 25)
@@ -126,7 +131,20 @@ Func InitGUI()
    $GUI_AutoRaidIgnoreStorages = GUICtrlCreateCheckbox("Ignore Storages", $x+5, $y, 110, 25)
    _GUICtrlButton_SetCheck($GUI_AutoRaidIgnoreStorages, IniRead($gIniFile, "General", "Ignore Storages", $BST_UNCHECKED))
 
-   $y += 24
+   $y += 19
+   $GUI_AutoRaidSnipeExposedTH = GUICtrlCreateCheckbox("Snipe Exposed TH", $x+5, $y, 110, 25)
+   _GUICtrlButton_SetCheck($GUI_AutoRaidSnipeExposedTH, IniRead($gIniFile, "General", "Snipe Exposed TH", $BST_UNCHECKED))
+
+   $y += 23
+   GUICtrlCreateLabel("Wait for Heroes", $x+5, $y+5, 80, 17)
+   $GUI_AutoRaidWaitForHeroesCombo = GUICtrlCreateCombo("", $x+85, $y+2, 35, 17, $CBS_DROPDOWNLIST)
+   _GUICtrlComboBox_AddString($GUI_AutoRaidWaitForHeroesCombo, "0")
+   _GUICtrlComboBox_AddString($GUI_AutoRaidWaitForHeroesCombo, "1")
+   _GUICtrlComboBox_AddString($GUI_AutoRaidWaitForHeroesCombo, "2")
+   _GUICtrlComboBox_AddString($GUI_AutoRaidWaitForHeroesCombo, "3")
+   _GUICtrlComboBox_SetCurSel($GUI_AutoRaidWaitForHeroesCombo, IniRead($gIniFile, "General", "Wait For Heroes", 0))
+
+   $y += 23
    GUICtrlCreateLabel("Strategy:", $x+5, $y, 116, 17)
 
    $y += 17
@@ -139,7 +157,7 @@ Func InitGUI()
 
    ; Bottom
    $x = 10
-   $y = 272
+   $y = 310
    $w = 265
    $GUI_Winnings = GUICtrlCreateLabel("Net winnings: - / - / - / -", $x, $y, $w, 17)
 
@@ -239,10 +257,10 @@ Func HotKeyPressed()
 	  _GUICtrlButton_SetCheck($GUI_FindMatchCheckBox, $chk ? $BST_UNCHECKED : $BST_CHECKED)
 	  GUIFindMatchCheckBox()
 
-   Case "{F9}" ; Auto Snipe
-	  Local $chk = (_GUICtrlButton_GetCheck($GUI_AutoSnipeCheckBox) = $BST_CHECKED) ? True : False
-	  _GUICtrlButton_SetCheck($GUI_AutoSnipeCheckBox, $chk ? $BST_UNCHECKED : $BST_CHECKED)
-	  GUIAutoSnipeCheckBox()
+   Case "{F9}" ; Auto Push
+	  Local $chk = (_GUICtrlButton_GetCheck($GUI_AutoPushCheckBox) = $BST_CHECKED) ? True : False
+	  _GUICtrlButton_SetCheck($GUI_AutoPushCheckBox, $chk ? $BST_UNCHECKED : $BST_CHECKED)
+	  GUIAutoPushCheckBox()
 
    Case "{F10}" ; Auto Raid
 	  Local $chk = (_GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox) = $BST_CHECKED) ? True : False
@@ -274,13 +292,14 @@ EndFunc
 Func GUIFindMatchCheckBox()
    DebugWrite("Find Match clicked")
    $gFindMatchClicked = (_GUICtrlButton_GetCheck($GUI_FindMatchCheckBox) = $BST_CHECKED) ? True : False
-   _GUICtrlButton_Enable($GUI_AutoSnipeCheckBox, Not($gFindMatchClicked))
+   _GUICtrlButton_Enable($GUI_AutoPushCheckBox, Not($gFindMatchClicked))
    _GUICtrlButton_Enable($GUI_AutoRaidCheckBox, Not($gFindMatchClicked))
+   _GUICtrlButton_Enable($GUI_DefenseFarmCheckBox, Not($gFindMatchClicked))
 
    If $gFindMatchClicked Then
 	  HotKeySet("{F9}") ; Find Snipable TH
 	  HotKeySet("{F10}") ; Auto Raid
-	  _GUICtrlButton_SetCheck($GUI_AutoSnipeCheckBox, $BST_UNCHECKED)
+	  _GUICtrlButton_SetCheck($GUI_AutoPushCheckBox, $BST_UNCHECKED)
 	  _GUICtrlButton_SetCheck($GUI_AutoRaidCheckBox, $BST_UNCHECKED)
 	  $gPossibleKick = 0
    Else
@@ -290,14 +309,15 @@ Func GUIFindMatchCheckBox()
 
 EndFunc
 
-Func GUIAutoSnipeCheckBox()
-   DebugWrite("Auto Snipe clicked")
-   $gAutoSnipeClicked = (_GUICtrlButton_GetCheck($GUI_AutoSnipeCheckBox) = $BST_CHECKED) ? True : False
-   _GUICtrlButton_Enable($GUI_FindMatchCheckBox, Not($gAutoSnipeClicked))
-   _GUICtrlButton_Enable($GUI_AutoRaidCheckBox, Not($gAutoSnipeClicked))
+Func GUIAutoPushCheckBox()
+   DebugWrite("Auto Push clicked")
+   $gAutoPushClicked = (_GUICtrlButton_GetCheck($GUI_AutoPushCheckBox) = $BST_CHECKED) ? True : False
+   _GUICtrlButton_Enable($GUI_FindMatchCheckBox, Not($gAutoPushClicked))
+   _GUICtrlButton_Enable($GUI_AutoRaidCheckBox, Not($gAutoPushClicked))
+   _GUICtrlButton_Enable($GUI_DefenseFarmCheckBox, Not($gAutoPushClicked))
 
    ; Disable check boxes
-   If $gAutoSnipeClicked Then
+   If $gAutoPushClicked Then
 	  HotKeySet("{F8}") ; Find Match
 	  HotKeySet("{F10}") ; Auto Raid
 	  _GUICtrlButton_SetCheck($GUI_FindMatchCheckBox, $BST_UNCHECKED)
@@ -309,30 +329,30 @@ Func GUIAutoSnipeCheckBox()
    EndIf
 
    ; Collect starting loot or report ending loot
-   If $gAutoSnipeClicked Then
+   If $gAutoPushClicked Then
 	  CaptureAutoBeginLoot()
    Else
 	  CaptureAutoEndLoot()
    EndIf
 
    ; Set stage
-   $gAutoStage = ($gAutoSnipeClicked ? $eAutoQueueTraining : $eAutoNotStarted)
+   $gAutoStage = ($gAutoPushClicked ? $eAutoQueueTraining : $eAutoNotStarted)
    If $gAutoStage = $eAutoNotStarted Then GUICtrlSetData($GUI_AutoStatus, "Auto: Idle")
 EndFunc
 
 Func GUIAutoRaidCheckBox()
    DebugWrite("Auto Raid clicked")
-   Local $test = _GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox)
    $gAutoRaidClicked = (_GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox) = $BST_CHECKED) ? True : False
    _GUICtrlButton_Enable($GUI_FindMatchCheckBox, Not($gAutoRaidClicked))
-   _GUICtrlButton_Enable($GUI_AutoSnipeCheckBox, Not($gAutoRaidClicked))
+   _GUICtrlButton_Enable($GUI_AutoPushCheckBox, Not($gAutoRaidClicked))
+   _GUICtrlButton_Enable($GUI_DefenseFarmCheckBox, Not($gAutoRaidClicked))
 
    ; Disable check boxes
    If $gAutoRaidClicked Then
 	  HotKeySet("{F8}") ; Find Match
 	  HotKeySet("{F9}") ; Find Snipable TH
 	  _GUICtrlButton_SetCheck($GUI_FindMatchCheckBox, $BST_UNCHECKED)
-	  _GUICtrlButton_SetCheck($GUI_AutoSnipeCheckBox, $BST_UNCHECKED)
+	  _GUICtrlButton_SetCheck($GUI_AutoPushCheckBox, $BST_UNCHECKED)
 	  ZoomOut(True)
 	  $gPossibleKick = 0
    Else
@@ -350,6 +370,40 @@ Func GUIAutoRaidCheckBox()
    ; Set stage
    $gAutoStage = ($gAutoRaidClicked ? $eAutoQueueTraining : $eAutoNotStarted)
    If $gAutoStage = $eAutoNotStarted Then GUICtrlSetData($GUI_AutoStatus, "Auto: Idle")
+EndFunc
+
+Func GUIDefenseFarmCheckBox()
+   DebugWrite("Defense Farm clicked")
+   $gDefenseFarmClicked = (_GUICtrlButton_GetCheck($GUI_DefenseFarmCheckBox) = $BST_CHECKED) ? True : False
+   _GUICtrlButton_Enable($GUI_KeepOnlineCheckBox, Not($gDefenseFarmClicked))
+   ;_GUICtrlButton_Enable($GUI_CollectLootCheckBox, Not($gDefenseFarmClicked))
+   ;_GUICtrlButton_Enable($GUI_DonateTroopsCheckBox, Not($gDefenseFarmClicked))
+   _GUICtrlButton_Enable($GUI_FindMatchCheckBox, Not($gDefenseFarmClicked))
+   _GUICtrlButton_Enable($GUI_AutoPushCheckBox, Not($gDefenseFarmClicked))
+   _GUICtrlButton_Enable($GUI_AutoRaidCheckBox, Not($gDefenseFarmClicked))
+
+   ; Disable check boxes
+   If $gDefenseFarmClicked Then
+	  HotKeySet("{F5}") ; Keep Online
+	  ;HotKeySet("{F6}") ; Collect Loot
+	  ;HotKeySet("{F7}") ; Donate Troops
+	  HotKeySet("{F8}") ; Find Match
+	  HotKeySet("{F9}") ; Find Snipable TH
+	  HotKeySet("{F10}") ; Auto Raid
+	  _GUICtrlButton_SetCheck($GUI_KeepOnlineCheckBox, $BST_UNCHECKED)
+	  _GUICtrlButton_SetCheck($GUI_FindMatchCheckBox, $BST_UNCHECKED)
+	  _GUICtrlButton_SetCheck($GUI_AutoPushCheckBox, $BST_UNCHECKED)
+	  _GUICtrlButton_SetCheck($GUI_AutoRaidCheckBox, $BST_UNCHECKED)
+	  ZoomOut(True)
+	  $gPossibleKick = 0
+   Else
+	  HotKeySet("{F5}", HotKeyPressed) ; Keep Online
+	  HotKeySet("{F6}", HotKeyPressed) ; Collect Loot
+	  HotKeySet("{F7}", HotKeyPressed) ; Donate Troops
+	  HotKeySet("{F8}", HotKeyPressed) ; Find Match
+	  HotKeySet("{F9}", HotKeyPressed) ; Find Snipable TH
+	  HotKeySet("{F10}", HotKeyPressed) ; Auto Raid
+   EndIf
 EndFunc
 
 Func GUICloseButton()

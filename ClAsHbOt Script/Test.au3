@@ -37,7 +37,7 @@ Func TestRaidLoot()
    Local $deadBase = IsColorPresent($rDeadBaseIndicatorColor)
    DebugWrite("Dead: " & $deadBase)
    Local $location, $top, $left
-   Local $townHall = GetTownHallLevel($location, $left, $top)
+   Local $townHall = GetTownHallLevel(False, $location, $left, $top)
    DebugWrite("TH: " & $townHall)
 EndFunc
 
@@ -73,11 +73,11 @@ Func TestEndBattleBonus()
 EndFunc
 
 Func TestStorage()
-GrabFrameToFile("StorageUsageFrame.bmp", 261, 200, 761, 550)
-Local $x, $y, $conf, $matchIndex
-Local $usageAdj = 10
+   GrabFrameToFile("StorageUsageFrame.bmp", 261, 200, 761, 550)
+   Local $x, $y, $conf, $matchIndex
+   Local $usageAdj = 10
 
-ScanFrameForBestBMP("StorageUsageFrame.bmp", $GoldStorageBMPs, $gConfidenceStorages, $matchIndex, $conf, $x, $y)
+   ScanFrameForBestBMP("StorageUsageFrame.bmp", $GoldStorageBMPs, $gConfidenceStorages, $matchIndex, $conf, $x, $y)
    DebugWrite("Gold Match Index: " & $matchIndex)
    If $matchIndex <> -1 Then
 	  Local $s = $GoldStorageBMPs[$matchIndex]
@@ -109,18 +109,24 @@ ScanFrameForBestBMP("StorageUsageFrame.bmp", $GoldStorageBMPs, $gConfidenceStora
 EndFunc
 
 Func TestRaidTroopsCount()
-   Local $troopIndex[$eTroopCount][4]
-   FindRaidTroopSlots($gTroopSlotBMPs, $troopIndex)
+   Local $troopIndex[$eTroopCount][5]
+   FindRaidTroopSlotsAndCounts($gTroopSlotBMPs, $troopIndex)
 
-   Local $availableBarbs = GetAvailableTroops($eTroopBarbarian, $troopIndex)
-   Local $availableArchs = GetAvailableTroops($eTroopArcher, $troopIndex)
+   For $i=0 To $eTroopCount-1
+	  If $troopIndex[$i][4]>0 Then DebugWrite("Available " & $gTroopNames[$i] & ": " & $troopIndex[$i][4])
+   Next
 
-   DebugWrite("Available Barbarians: " & $availableBarbs)
-   DebugWrite("Avaliable Archers: " & $availableArchs)
+   Local $spellIndex[$eSpellCount][5]
+   FindRaidTroopSlotsAndCounts($gSpellSlotBMPs, $spellIndex)
+
+   For $i=0 To $eSpellCount-1
+	  If $spellIndex[$i][4]>0 Then DebugWrite("Available " & $gSpellNames[$i] & ": " & $spellIndex[$i][4])
+   Next
+
 EndFunc
 
 Func TestBarracksStatus()
-   Local $queueStatus = ScrapeFuzzyText($gBarracksStatusCharacterMaps, $rBarracksWindowTextBox, $gBarracksStatusCharMapsMaxWidth, $eScrapeDropSpaces)
+   Local $queueStatus = ScrapeFuzzyText($gBarracksCharacterMaps, $rBarracksWindowTextBox, $gBarracksCharMapsMaxWidth, $eScrapeDropSpaces)
    DebugWrite("Barracks queue status: " & $queueStatus)
 EndFunc
 
@@ -173,7 +179,53 @@ Func TestDeployBoxCalcs()
 	  $i+=1
 	  $y+=15
    Next
+EndFunc
 
+Func TestDonate()
+   If IsButtonPresent($rMainScreenOpenChatButton)=False Then OpenChatWindow()
 
+   Local $donateButton[4]
+   ;FindDonateButton($donateButton)
+
+   $donateButton[0] = 33  - $rChatTextBoxAsOffset[0]
+   $donateButton[1] = 242 - $rChatTextBoxAsOffset[1]
+   $donateButton[2] = 285 - $rChatTextBoxAsOffset[2]
+   $donateButton[3] = $donateButton[1]+10 - $rChatTextBoxAsOffset[3]
+
+   Local $requestText
+   GetRequestText($donateButton, $requestText)
+
+   ;OpenDonateTroopsWindow($donateButton)
+
+   ;Local $donateIndex[$eTroopCount][4]
+   ;FindDonateTroopSlots($donateIndex)
+
+   ;Local $indexOfTroopToDonate
+   ;ParseRequestText($requestText, $donateIndex, $indexOfTroopToDonate)
+
+   ;DebugWrite("Donate index: " & $indexOfTroopToDonate)
+EndFunc
+
+Func TestTownHall()
+   Local $bestMatch, $bestConfidence, $left, $top
+
+   GrabFrameToFile("TownHallTopFrame.bmp")
+   ScanFrameForBestBMP("TownHallTopFrame.bmp", $TownHallBMPs, $gConfidenceTownHall, $bestMatch, $bestConfidence, $left, $top)
+
+   DebugWrite("Likely TH Level " & $bestMatch+7 & " conf: " & $bestConfidence & @CRLF)
+
+EndFunc
+
+Func TestCollectors()
+   Local $matchX[1], $matchY[1], $matchCount
+
+   ; Grab frame
+   GrabFrameToFile("LocateCollectorsFrame.bmp")
+
+   $matchCount = LocateBuildings("All collectors", "LocateCollectorsFrame.bmp", $CollectorBMPs, $gConfidenceCollector, $matchX, $matchY)
+
+   For $i = 0 To $matchCount-1
+	  DebugWrite("Match " & $i & ": " & $matchX[$i] & "," & $matchY[$i])
+   Next
 
 EndFunc

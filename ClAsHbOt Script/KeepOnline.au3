@@ -1,10 +1,12 @@
 Func CheckForAndroidMessageBox()
 
+   ;DebugWrite("CheckForAndroidMessageBox()")
+
    Local $boxPresent = False
 
    ; Check for Android message boxes
    If IsButtonPresent($rAndroidMessageButton1) Then
-	  DebugWrite("Online check: Clicking short Android Msg Box")
+	  DebugWrite("CheckForAndroidMessageBox() Clicking short Android Msg Box")
 
 	  WinActivate($gTitle)
 	  WinWaitActive($gTitle)
@@ -15,7 +17,7 @@ Func CheckForAndroidMessageBox()
    EndIf
 
    If IsButtonPresent($rAndroidMessageButton2) Then
-	  DebugWrite("Online check: Clicking long Android Msg Box")
+	  DebugWrite("CheckForAndroidMessageBox() Clicking long Android Msg Box")
 
 	  WinActivate($gTitle)
 	  WinWaitActive($gTitle)
@@ -45,7 +47,13 @@ Func CheckForAndroidMessageBox()
 EndFunc
 
 Func AttackingIsDisabled()
-   Return IsColorPresent($rAttackingDisabledPoint1Color) And _
-		  IsColorPresent($rAttackingDisabledPoint2Color) And _
-		  IsColorPresent($rAttackingDisabledPoint3Color)
+   If IsColorPresent($rAttackingDisabledPoint1Color) And _
+	  IsColorPresent($rAttackingDisabledPoint2Color) And _
+	  IsColorPresent($rAttackingDisabledPoint3Color) Then Return True
+
+   If IsColorPresent($rWaitForPersonalBreakPoint1Color) And _
+	  IsColorPresent($rWaitForPersonalBreakPoint2Color) And _
+	  IsColorPresent($rWaitForPersonalBreakPoint3Color) Then Return True
+
+   Return False
 EndFunc
