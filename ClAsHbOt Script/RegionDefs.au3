@@ -90,12 +90,13 @@ Global $rWaitForPersonalBreakPoint1Color[4] = [164, 162, 0xff1919, 0]
 Global $rWaitForPersonalBreakPoint2Color[4] = [434, 181, 0xff1919, 0]
 Global $rWaitForPersonalBreakPoint3Color[4] = [698, 167, 0xff1919, 0]
 Global $rArmyManagerSelectedColor[4] = [0, 0, 0xE8E8E0, 0]
+Global $rRaidTroopSelectedColor[4] = [0, 0, 0xffffff, 0 ]
 
 ; Bounding Boxes
 ; Left, Top, Right, Bottom
 Global $rRaidTroopBox1[4] = [46, 514, 110, 599] ; first button only
 Global $rRaidTroopBox2[4] = [116, 514, 810, 599] ; buttons 2-11
-Global $rRaidButtonOffset[4] = [0, -17, 60, 61]
+Global $rRaidButtonOffset[4] = [0, -17, 60, 63]
 Global $rCampTroopBox1[4] = [134, 148, 728, 223] ; main troops
 Global $rCampTroopBox2[4] = [421, 386, 600, 462] ; heroes
 Global $rChatBox[4] = [0, 0, 302, 623]
@@ -103,5 +104,5 @@ Global $rDonateWindow[4] = [317, 1, 809, 623]
 Global $rDonateButtonOffset[4] = [0, -19, 58, 58]
 Global $rTHSnipeNorthDeployBox[4] = [$gScreenCenterDraggedDown[0]-20, 40, $gScreenCenterDraggedDown[0]+20, 70]
 Global $rTHSnipeSouthDeployBox[4] = [$gScreenCenterDraggedUp[0]-20, 500, $gScreenCenterDraggedUp[0]+20, 520]
-Global $rTHSnipeEastDeployBox[4] = [40, $gScreenCenterDraggedDown[1]-15, 70, $gScreenCenterDraggedDown[1]+15]
-Global $rTHSnipeWestDeployBox[4] = [788, $gScreenCenterDraggedDown[1]-15, 818, $gScreenCenterDraggedDown[1]+15]
+Global $rTHSnipeEastDeployBox[4] = [20, $gScreenCenterDraggedDown[1]-15, 50, $gScreenCenterDraggedDown[1]+15]
+Global $rTHSnipeWestDeployBox[4] = [808, $gScreenCenterDraggedDown[1]-15, 838, $gScreenCenterDraggedDown[1]+15]

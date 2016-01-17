@@ -110,14 +110,16 @@ EndFunc
 
 Func TestRaidTroopsCount()
    Local $troopIndex[$eTroopCount][5]
-   FindRaidTroopSlotsAndCounts($gTroopSlotBMPs, $troopIndex)
+   FindRaidTroopSlots($gTroopSlotBMPs, $troopIndex)
+   UpdateRaidTroopCounts($troopIndex)
 
    For $i=0 To $eTroopCount-1
 	  If $troopIndex[$i][4]>0 Then DebugWrite("Available " & $gTroopNames[$i] & ": " & $troopIndex[$i][4])
    Next
 
    Local $spellIndex[$eSpellCount][5]
-   FindRaidTroopSlotsAndCounts($gSpellSlotBMPs, $spellIndex)
+   FindRaidTroopSlots($gSpellSlotBMPs, $spellIndex)
+   UpdateRaidTroopCounts($spellIndex)
 
    For $i=0 To $eSpellCount-1
 	  If $spellIndex[$i][4]>0 Then DebugWrite("Available " & $gSpellNames[$i] & ": " & $spellIndex[$i][4])
@@ -185,25 +187,20 @@ Func TestDonate()
    If IsButtonPresent($rMainScreenOpenChatButton)=False Then OpenChatWindow()
 
    Local $donateButton[4]
-   ;FindDonateButton($donateButton)
-
-   $donateButton[0] = 33  - $rChatTextBoxAsOffset[0]
-   $donateButton[1] = 242 - $rChatTextBoxAsOffset[1]
-   $donateButton[2] = 285 - $rChatTextBoxAsOffset[2]
-   $donateButton[3] = $donateButton[1]+10 - $rChatTextBoxAsOffset[3]
+   FindDonateButton($donateButton)
 
    Local $requestText
    GetRequestText($donateButton, $requestText)
 
-   ;OpenDonateTroopsWindow($donateButton)
+   OpenDonateTroopsWindow($donateButton)
 
-   ;Local $donateIndex[$eTroopCount][4]
-   ;FindDonateTroopSlots($donateIndex)
+   Local $donateIndex[$eTroopCount][4]
+   FindDonateTroopSlots($donateIndex)
 
-   ;Local $indexOfTroopToDonate
-   ;ParseRequestText($requestText, $donateIndex, $indexOfTroopToDonate)
+   Local $indexOfTroopToDonate
+   ParseRequestText($requestText, $donateIndex, $indexOfTroopToDonate)
 
-   ;DebugWrite("Donate index: " & $indexOfTroopToDonate)
+   DebugWrite("Donate index: " & $indexOfTroopToDonate)
 EndFunc
 
 Func TestTownHall()
