@@ -19,7 +19,7 @@ Global Enum $eActionTypeRaid, $eActionTypeDonate, $eActionTypeBarracks, $eAction
 Global Enum $eSlotTypeTroop, $eSlotTypeSpell, $eSlotTypeHero
 Global Enum $eBuiltTroopClassNormal, $eBuiltTroopClassHero
 Global Enum $eSearchTypeTownHall, $eSearchTypeLootCart, $eSearchClashIcon, $eSearchPlayStoreOpenButton, $eSearchDonateButton, _
-			$eSearchTypeGoldStorage, $eSearchTypeElixStorage, $eSearchTypeDarkStorage, $eSearchTypeLootCollector, $eSearchTypeLootBubble
+			$eSearchTypeGoldStorage, $eSearchTypeElixStorage, $eSearchTypeLootCollector, $eSearchTypeLootBubble
 Global Enum $fontMyStuff, $fontRaidTroopCountUnselected, $fontRaidTroopCountSelected, $fontRaidLoot, $fontBarracksStatus, _
 			$fontBattleEndWinnings, $fontBattleEndBonus, $fontChat, $fontArmyOverviewStatus
 Global $gMAXSTRING = 500
@@ -68,22 +68,26 @@ Global $gAutoNeedToCollectStartingLoot = False, $gAutoNeedToCollectEndingLoot = 
 Global Enum $eTroopBarbarian, $eTroopArcher, $eTroopGiant, $eTroopGoblin, $eTroopWallBreaker, _
 			$eTroopBalloon, $eTroopWizard, $eTroopHealer, $eTroopDragon, $eTroopPekka, _
 			$eTroopMinion, $eTroopHogRider, $eTroopValkyrie, $eTroopGolem, $eTroopWitch, _
-			$eTroopLavaHound, _
+			$eTroopLavaHound, $eTroopBowler, _
 			$eTroopKing, $eTroopQueen, $eTroopWarden, _
 			$eTroopKingGrayed, $eTroopQueenGrayed, $eTroopWardenGrayed, $eTroopCount
 Global $gTroopCountExcludingHeroes = $eTroopCount-6
 Global $gTroopNames[$eTroopCount] = ["Barbarian", "Archer", "Giant", "Goblin", "Wall Breaker", _
 									 "Balloon", "Wizard", "Healer", "Dragon", "Pekka", _
 									 "Minion", "Hog Rider", "Valkyrie", "Golem", "Witch", _
-									 "Lava Hound", _
+									 "Lava Hound", "Bowler", _
 									 "Barbarian King", "Archer Queen", "Grand Warden", _
 									 "Barbarian King Grayed", "Archer Queen Grayed", "Grand Warden Grayed"]
 Global $gTroopSpace[$eTroopCount] = [ 1, 1, 5, 1, 2, _
 									  5, 4, 14, 20, 25, _
 									  2, 5, 8, 30, 12, _
-									  30, _
+									  30, 8, _
 									  0, 0, 0, _
 									  0, 0, 0 ]
+Global $gDonateMaxClicks[$gTroopCountExcludingHeroes] = [ 6, 6, 6, 6, 6, _
+														  6, 6, 2, 1, 1, _
+														  6, 6, 4, 1, 2, _
+														  1, 4 ]
 Global Enum $eSpellLightning, $eSpellHeal, $eSpellRage, $eSpellJump, $eSpellFreeze, $eSpellPoison, _
    $eSpellEarthquake, $eSpellHaste, $eSpellCount
 Global $gSpellNames[$eSpellCount] = ["Lightning", "Heal", "Rage", "Jump", "Freeze", "Poison", _

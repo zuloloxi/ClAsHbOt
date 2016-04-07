@@ -88,6 +88,7 @@ Func DonateTroops(ByRef $hBMP)
 	  ; If donate troops window is still open, then close it
 	  If IsColorPresent($hBMP, $rWindowChatDimmedColor) Then
 		 RandomWeightedClick($rSafeAreaButton)
+		 Sleep(500)
 
 		 If WaitForScreen($hBMP, 5000, $eScreenChatOpen) = False Then
 			DebugWrite("DonateTroops() Error waiting for open chat screen")
@@ -315,8 +316,6 @@ EndFunc
 
 Func ClickDonateTroops(ByRef $hBMP, Const ByRef $donateIndex, Const $indexOfTroopToDonate)
 
-   Local $DonateMaxClicks[16] = [6, 6, 6, 6,   6, 6, 6, 2,   1, 1, 6, 6,   4, 1, 2, 1]
-
    Local $button[4] = [$donateIndex[$indexOfTroopToDonate][0], _
 					   $donateIndex[$indexOfTroopToDonate][1], _
 					   $donateIndex[$indexOfTroopToDonate][2], _
@@ -324,7 +323,7 @@ Func ClickDonateTroops(ByRef $hBMP, Const ByRef $donateIndex, Const $indexOfTroo
 
    Local $donateCount=0
 
-   For $i = 1 To $DonateMaxClicks[$indexOfTroopToDonate]
+   For $i = 1 To $gDonateMaxClicks[$indexOfTroopToDonate]
 	  If IsColorPresent($hBMP, $rWindowChatDimmedColor) Then
 		 RandomWeightedClick($button)
 		 $donateCount+=1
