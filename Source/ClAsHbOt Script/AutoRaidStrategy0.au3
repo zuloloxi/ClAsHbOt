@@ -21,7 +21,7 @@ Func FillBarracksStrategy0(ByRef $hHMP, Const $initialFillFlag, Const ByRef $bui
    ; Loop through each standard barracks window and queue troops
    Local $barracksCount = 1
 
-   While $barracksCount<=4 And (_GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox)=$BST_CHECKED Or _GUICtrlButton_GetCheck($GUI_AutoPushCheckBox)=$BST_CHECKED)
+   While $barracksCount<=4 And _GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox)=$BST_CHECKED
 	  ; Click next standard barracks button on Army Manager Window, if unsuccessful, then we are done
 	  If OpenNextAvailableStandardBarracks($hHMP) = False Then
 		 ExitLoop
@@ -70,8 +70,7 @@ Func FillBarracksStrategy0(ByRef $hHMP, Const $initialFillFlag, Const ByRef $bui
 			_WinAPI_DeleteObject($hHMP)
 			$hHMP = CaptureFrameHBITMAP("FillBarracksStrategy0")
 		 EndIf
-	  Until $troopsToFill=0 Or $fillTries>=6 Or _
-		 (_GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox)=$BST_UNCHECKED And _GUICtrlButton_GetCheck($GUI_AutoPushCheckBox)=$BST_UNCHECKED)
+	  Until $troopsToFill=0 Or $fillTries>=6 Or _GUICtrlButton_GetCheck($GUI_AutoRaidCheckBox)=$BST_UNCHECKED
 
 	  $barracksCount+=1
    WEnd
@@ -127,6 +126,7 @@ Func AutoRaidExecuteRaidStrategy0(ByRef $hBMP)
    EndIf
 
    ; Deploy breakers
+   Sleep(3000)
    If $troopIndex[$eTroopWallBreaker][4] > 0 And _GUICtrlButton_GetCheck($GUI_AutoRaidUseBreakers) = $BST_CHECKED Then
 	  DebugWrite("Deploying Breakers")
 	  DeployTroopsToSafeBoxes($eTroopWallBreaker, $troopIndex, $direction)
